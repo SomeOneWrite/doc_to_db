@@ -1,3 +1,4 @@
+import re
 import sqlite3
 
 from docx import Document
@@ -9,7 +10,7 @@ conn = sqlite3.connect(db_name)
 query = conn.cursor()
 
 documents = [
-    ''
+    '1.docx'
 ]
 
 
@@ -23,10 +24,34 @@ class ParserData:
         self.query = query
         pass
 
+    def check_material_key(self, cells):
+        cell = cells[0]
+        result = re.search(r'(\d\d\d-\d\d\d\d)', cell.text)
+        if result:
+            return result.group(1)
+        return None
+
+    def check_machines_key(self, cells):
+        cell = cells[0]
+        result = re.search(r'(\d\d\d\d\d\d)', cell.text)
+        if result:
+            return result.group(1)
+        return None
+
+    def parse_machines(self, rows):
+        for row in rows:
+            self.check_machines_key(row.cells)
+
+    def parse_materials(self, rows):
+        for row in rows:
+            if not (row.cells or len(row.cells)):
+                continue
+            self.check_material_key(row.cells)
+
     def parse_table(self, table):
         rows = table.rows
-        for row in rows:
-            pass
+        self.parse_materials(rows)
+        self.parse_machines(rows)
 
     def parse_file(self, filename):
         doc = Document(filename)
@@ -35,3 +60,7 @@ class ParserData:
         print('Всего таблиц: ' + str(len(tables)))
         for table in tables:
             self.parse_table(table)
+
+
+for file in documents:
+    ParserData(query).parse_file(file)
