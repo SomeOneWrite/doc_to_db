@@ -28,6 +28,7 @@ class ParserData:
         cell = cells[0]
         result = re.search(r'(\d\d\d-\d\d\d\d)', cell.text)
         if result:
+            print(result.group(1))
             return result.group(1)
         return None
 
@@ -35,16 +36,29 @@ class ParserData:
         cell = cells[0]
         result = re.search(r'(\d\d\d\d\d\d)', cell.text)
         if result:
+            print(result.group(1))
             return result.group(1)
         return None
 
     def parse_machines(self, rows):
         for row in rows:
+            try:
+                if not row.cells:
+                    continue
+                if len(row.cells) < 2:
+                    continue
+            except Exception as e:
+                continue
             self.check_machines_key(row.cells)
 
     def parse_materials(self, rows):
         for row in rows:
-            if not (row.cells or len(row.cells)):
+            try:
+                if not row.cells:
+                    continue
+                if len(row.cells) < 2:
+                    continue
+            except Exception as e:
                 continue
             self.check_material_key(row.cells)
 
@@ -58,8 +72,8 @@ class ParserData:
         self.filename = filename
         tables = doc.tables
         print('Всего таблиц: ' + str(len(tables)))
-        for table in tables:
-            self.parse_table(table)
+        for table in range(0, len(tables)):
+            self.parse_table(tables[table])
 
 
 for file in documents:
