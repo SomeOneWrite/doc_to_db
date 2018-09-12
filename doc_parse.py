@@ -17,6 +17,7 @@ class MainParser:
         self.parent_id = None
         self.last_razdel_id = None
         self.last_otdel_id = None
+        self.last_inserted = None
 
     def get_last_insert_id(self, table_name):
         last_id = self.query.execute('select seq from sqlite_sequence where name="' + table_name + '"')
@@ -39,20 +40,22 @@ class MainParser:
                                    (self.collection_id, None, otdel_str))
                 self.parent_id = self.get_last_insert_id('captions')
                 self.last_otdel_id = self.parent_id
+                self.last_inserted = 1
             if razdel_str:
                 self.query.execute('insert into captions (collection_id, parent_id, name) values(?, ?, ?)',
                                    (self.collection_id, self.last_otdel_id, razdel_str))
                 self.parent_id = self.get_last_insert_id('captions')
                 self.last_razdel_id = self.parent_id
+                self.last_inserted = 2
             if podrazdel_str:
                 self.query.execute('insert into captions (collection_id, parent_id, name) values(?, ?, ?)',
                                    (self.collection_id, self.last_razdel_id, podrazdel_str))
                 self.parent_id = self.get_last_insert_id('captions')
+                self.last_inserted = 3
             if table_name:
                 self.query.execute('insert into captions (collection_id, parent_id, name) values(?, ?, ?)',
                                    (self.collection_id, self.parent_id, table_name))
-
-
+                self.last_inserted = 4
             name_str = row.cells[0].text
             cells = row.cells
             if check_id(cells[0].text):

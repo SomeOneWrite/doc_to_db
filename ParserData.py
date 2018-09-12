@@ -1,11 +1,8 @@
-import re
 import sqlite3
 
 from docx import Document
 
-from ParseMaterials import ParseMaterials
-from ParseMachines import ParseMachines
-from ParseWorkers import ParseWorkers
+from Parsers.ParseWorkers import ParseWorkers
 
 db_name = 'main.odb'
 
@@ -18,7 +15,7 @@ documents = [
     #     # 'costs/doc/workers/3.docx',
     #     # 'costs/doc/workers/4.docx',
     #     # 'costs/doc/workers/5.docx',
-    'costs/doc/workers/main.docx',
+    'C:\\users\\anonim\\test\\main.docx',
 
     # '2.docx',
     # '3.docx',
@@ -29,10 +26,6 @@ documents = [
 
 
 class ParserData:
-
-    def get_last_insert_id(self, table_name):
-        last_id = self.query.execute('select seq from sqlite_sequence where name="' + table_name + '"')
-        return last_id.fetchone()[0]
 
     def __init__(self, query):
         self.query = query

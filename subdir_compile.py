@@ -34,26 +34,6 @@ for query_create in query_create_tables:
 
 root_dir = "C:\\users\\rinat\\test"
 
-dirs = list()
-
-
-def execute_script_from_file(filename):
-    fd = open(filename, 'r', encoding='utf-8')
-    sqlFile = fd.read()
-    fd.close()
-
-    # all SQL commands (split on ';')
-    sqlCommands = sqlFile.split(';')
-
-    # Execute every command from the input file
-    for command in sqlCommands:
-        # This will skip and report errors
-        # For example, if the tables do not yet exist, this will skip over
-        # the DROP TABLE commands
-        try:
-            query.execute(command)
-        except sqlite3.OperationalError as msg:
-            print("Command skipped: {}".format(msg))
 
 def get_last_insert_id(table_name):
     last_id = query.execute('select seq from sqlite_sequence where name="' + table_name + '"')
@@ -90,16 +70,6 @@ def build_dir(root, parent_id=None):
             parent_id = last_parent_id
             continue
         if file.endswith(".docx"):
-            # if file.startswith('~'): continue
-            # ex = query.execute(
-            #     'select * from collections where(collections.name = "{}")'.format(file[:-5])).fetchone()
-            # if ex:
-            #     print('Пропускаем файл ' + file)
-            #     continue
-            # if file.endswith('.data.docx'):
-            #     build_data(parent_id, root, file)
-            #     pass
-
             build_file(parent_id, root, file)
 
 build_dir(root_dir)
