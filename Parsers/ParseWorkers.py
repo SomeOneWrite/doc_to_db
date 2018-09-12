@@ -2,11 +2,8 @@ import json
 
 
 class ParseWorkers:
-    def __init__(self, query, filename):
+    def __init__(self, query):
         self.query = query
-        self.filename = filename
-        with open('config.json') as f:
-            self.data = json.load(f)
 
     def check_worker_key(self, cells):
         for cell in cells:

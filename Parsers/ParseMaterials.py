@@ -17,6 +17,11 @@ class ParseMaterials:
             result = result.replace(',', '.')
             try:
                 result = float(result)
+                result_2 = cells[i + 1].text
+                result_2 = ''.join(result_2.split())
+                result_2 = result_2.replace(',', '.')
+                result_2 = float(result_2)
+                return result, result_2
             except Exception as e:
                 result = None
                 continue
@@ -35,7 +40,7 @@ class ParseMaterials:
         if not result: return
         db_result = self.query.execute("select * from materials where materials.id = ?", [result]).fetchone()
         if db_result:
-            price = self.get_material_price(row.cells)
+            price, price_2 = self.get_material_price(row.cells)
             if re.match("^\d+?\.\d+?$", str(price)) is None:
                 pass
             if not price:
