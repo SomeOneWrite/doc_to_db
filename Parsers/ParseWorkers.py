@@ -28,10 +28,11 @@ class ParseWorkers:
         cells = table.rows[0].cells
         if cells[0].text.find('3') != -1:
             self.parse_prof(table.table)
+            return
         prefix = cells[0].text
         for row in range(1, len(table.rows)):
             cells = table.rows[row].cells
-            for tmp_cell in range(0, len(cells), 2):
+            for tmp_cell in range(0, len(cells) - 1, 2):
                 cell = cells[tmp_cell]
                 text = cell.text
                 text = text.replace('.', '-')

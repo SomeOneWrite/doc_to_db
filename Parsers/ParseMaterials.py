@@ -9,6 +9,7 @@ class ParseMaterials:
 
     def get_material_price(self, cells):
         result = None
+        result_2 = None
         for i in range(1, 6):
             if len(cells) - 1 < i:
                 break
@@ -26,7 +27,7 @@ class ParseMaterials:
                 result = None
                 continue
             break
-        return result
+        return result, result_2
 
     def check_material_key(self, cells):
         cell = cells[0]
@@ -49,6 +50,6 @@ class ParseMaterials:
             result = self.query.execute('update materials set price_vacantion = ? where materials.id = ?',
                                         (price, db_result[0]))
             if not result:
-                print('error update materials with id {}'.format(db_result[0]))
+                print('error update materials with id {} , not result'.format(db_result[0]))
             return
         return

@@ -33,14 +33,39 @@ class ParserData:
             # ParseMachines(query).run(row)
             # ParseMaterials(query).run(row)
 
-    def parse_transports(self, filename):
+    def parse_machines(self, filename):
         doc = Document(filename)
         self.filename = filename
         tables = doc.tables
         print('Всего таблиц: ' + str(len(tables)))
         for table in range(0, len(tables)):
             print('Process {} table of {}'.format(table, len(tables)))
-            ParseTransports(query).run(tables[table])
+            rows = tables[table].rows
+            for row in rows:
+                try:
+                    if len(row.cells) < 2:
+                        continue
+                except Exception as e:
+                    continue
+                ParseMachines(query).run(row)
+
+    def parse_materials(self, filename):
+        doc = Document(filename)
+        self.filename = filename
+        tables = doc.tables
+        print('Всего таблиц: ' + str(len(tables)))
+        for table in range(0, len(tables)):
+            print('Process {} table of {}'.format(table, len(tables)))
+            rows = tables[table].rows
+            for row in rows:
+                try:
+                    if not row:
+                        continue
+                    if len(row.cells) < 2:
+                        continue
+                except Exception as e:
+                    continue
+                ParseMaterials(query).run(row)
 
     def parse_file(self, filename):
         doc = Document(filename)
@@ -50,6 +75,15 @@ class ParserData:
         for table in range(0, len(tables)):
             print('Process {} table of {}'.format(table, len(tables)))
             self.parse_table(tables[table])
+
+    def parse_transports(self, filename):
+        doc = Document(filename)
+        self.filename = filename
+        tables = doc.tables
+        print('Всего таблиц: ' + str(len(tables)))
+        for table in range(0, len(tables)):
+            print('Process {} table of {}'.format(table, len(tables)))
+            ParseTransports(query).run(tables[table])
 
     def parse_workers(self, filename):
         doc = Document(filename)
@@ -68,16 +102,19 @@ def build_dir(root):
             continue
         if file.endswith(".docx"):
             print('Parse file with name: {}'.format(file))
-            if file.endswith(".transports.docx"):
+            if file.endswith("transports.docx"):
                 print('Parse transports')
-                ParserData(query).parse_transports(os.path.join(root, file))
-            elif file.endswith((".workers.docx")):
+                # ParserData(query).parse_transports(os.path.join(root, file))
+            elif file.endswith(("workers.docx")):
                 print('Parse workers')
-                ParserData(query).parse_workers(os.path.join(root, file))
-            else:
-                print('Parse materials and machines')
-                # ParserData(query).parse_file(os.path.join(root, file))
+                # ParserData(query).parse_workers(os.path.join(root, file))
+            elif file.endswith(("machines.docx")):
+                print('Parse machines')
+                # ParserData(query).parse_machines(os.path.join(root, file))
+            elif file.endswith(("materials.docx")):
+                print('Parse materials')
+                ParserData(query).parse_materials(os.path.join(root, file))
 
 
-build_dir('costs')
+build_dir('costs\omsk')
 conn.commit()
