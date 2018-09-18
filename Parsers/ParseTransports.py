@@ -54,3 +54,10 @@ class ParseTransports:
                 price_1 = to_float(price_1)
                 res = self.query.execute('update transports set price = ? where id = ?',
                                          [price_1, id]).fetchone()
+        # if len(rows[0].cells) == 3:
+        #     continue
+        # for row in range(1, len(rows)):
+        #     id = prefix
+        #     price_1 = to_float(rows[row].cells[2].text)
+        #
+        #     res = self.query.execute('update transports set price = ? where id = ?', [price_1, id]).fetchone()

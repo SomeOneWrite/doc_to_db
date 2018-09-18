@@ -33,20 +33,23 @@ class ParseWorkers:
         for row in range(1, len(table.rows)):
             cells = table.rows[row].cells
             for tmp_cell in range(0, len(cells) - 1, 2):
-                cell = cells[tmp_cell]
-                text = cell.text
-                text = text.replace('.', '-')
-                text = prefix + '-' + text
-                text = ''.join(text.split())
-                price = ''.join(cells[tmp_cell + 1].text.split())
-                price = price.replace(',', '.')
-                price = float(price)
-                db_result = self.query.execute("select * from workers where workers.id = ?", [text]).fetchall()
-                if db_result:
-                    db_result = self.query.execute('update workers set price = ? where workers.id = ?',
-                                                   [price, text]).fetchone()
-                    if not db_result:
-                        print('Cant write with id {} price {}'.format(text, price))
-                    else:
-                        print('id = {} price = {}'.format(text, price))
+                try:
+                    cell = cells[tmp_cell]
+                    text = cell.text
+                    text = text.replace('.', '-')
+                    text = prefix + '-' + text
+                    text = ''.join(text.split())
+                    price = ''.join(cells[tmp_cell + 1].text.split())
+                    price = price.replace(',', '.')
+                    price = float(price)
+                    db_result = self.query.execute("select * from workers where workers.id = ?", [text]).fetchall()
+                    if db_result:
+                        db_result = self.query.execute('update workers set price = ? where workers.id = ?',
+                                                       [price, text]).fetchone()
+                        if not db_result:
+                            print('Cant write with id {} price {}'.format(text, price))
+                        else:
+                            print('id = {} price = {}'.format(text, price))
+                except:
+                    continue
         return

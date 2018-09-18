@@ -1,5 +1,4 @@
 import re
-from colorama import Fore, Style
 
 
 class ParseMaterials:
@@ -36,6 +35,12 @@ class ParseMaterials:
             return result.group(1)
         return None
 
+    def check_material_key_text(self, text):
+        result = re.search(r'(\d\d\d-\d\d\d\d)', text)
+        if result:
+            return result.group(1)
+        return None
+
     def run(self, row):
         result = self.check_material_key(row.cells)
         if not result: return
@@ -53,3 +58,69 @@ class ParseMaterials:
                 print('error update materials with id {} , not result'.format(db_result[0]))
             return
         return
+
+    def run_text(self, doc):
+        i = 0
+        pattern = r'(\d\s\d\d\d\s\d\d\d,\d\d)\s(\d\s\d\d\d\s\d\d\d,\d\d)'
+        p_iter = iter(doc.paragraphs)
+        ln = len(doc.paragraphs)
+        for p in p_iter:
+            i += 1
+            key = self.check_material_key_text(p.text)
+            if key:
+                db_result = self.query.execute("select * from materials where materials.id = ?", [key]).fetchone()
+                if db_result:
+                    price = re.search(pattern, p.text)
+                    if price:
+                        b_result = self.query.execute(
+                            'update materials set price = ?, price_vacantion = ? where materials.id = ?',
+                            [price.group(1), price.group(2), db_result[0]])
+
+                    else:
+                        p_next = next(p_iter)
+                        key_2 = self.check_material_key_text(p_next.text)
+                        if not key_2:
+                            price = re.search(
+                                pattern,
+                                p_next.text)
+                            if price:
+                                b_result = self.query.execute(
+                                    'update materials set price = ?, price_vacantion = ? where materials.id = ?',
+                                    [price.group(1), price.group(2), db_result[0]])
+
+                            else:
+                                p_next = next(p_iter)
+                                key_2 = self.check_material_key_text(p_next.text)
+                                if not key_2:
+                                    price = re.search(
+                                        pattern,
+                                        p_next.text)
+                                    if price:
+                                        b_result = self.query.execute(
+                                            'update materials set price = ?, price_vacantion = ? where materials.id = ?',
+                                            [price.group(1), price.group(2), db_result[0]])
+
+                                    else:
+                                        p_next = next(p_iter)
+                                        key_2 = self.check_material_key_text(p_next.text)
+                                        if not key_2:
+                                            price = re.search(
+                                                pattern,
+                                                p_next.text)
+                                            if price:
+                                                b_result = self.query.execute(
+                                                    'update materials set price = ?, price_vacantion = ? where materials.id = ?',
+                                                    [price.group(1), price.group(2), db_result[0]])
+                                            else:
+                                                p_next = next(p_iter)
+                                                key_2 = self.check_material_key_text(p_next.text)
+                                                if not key_2:
+                                                    price = re.search(
+                                                        pattern,
+                                                        p_next.text)
+                                                    if price:
+                                                        b_result = self.query.execute(
+                                                            'update materials set price = ?, price_vacantion = ? where materials.id = ?',
+                                                            [price.group(1), price.group(2), db_result[0]])
+                                                    else:
+                                                        print('error updating with id {}'.format(key))
