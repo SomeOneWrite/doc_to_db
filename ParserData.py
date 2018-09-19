@@ -8,7 +8,7 @@ from Parsers.ParseMaterials import ParseMaterials
 from Parsers.ParseTransports import ParseTransports
 from Parsers.ParseWorkers import ParseWorkers
 
-db_name = 'omsk.odb'
+db_name = 'katalog_omsk.odb'
 
 conn = sqlite3.connect(db_name)
 
@@ -65,10 +65,10 @@ class ParserData:
                     continue
                 ParseMaterials(query).run(row)
 
-    def parse_materials_text(self, filename):
+    def parse_materials_text(self, filename, count):
         doc = Document(filename)
         self.filename = filename
-        ParseMaterials(query).run_text(doc)
+        ParseMaterials(query).run_text(doc, count)
 
     def parse_file(self, filename):
         doc = Document(filename)
@@ -100,15 +100,20 @@ class ParserData:
 
 def search_file(filename):
     doc = Document(filename)
+    current_table = 0
     print('parse file {}'.format(filename))
     tables = doc.tables
     db_result = query.execute('select * from materials where price isnull').fetchall()
+    tables_len = len(doc.tables)
+    print('tables: {}'.format(tables_len))
     for table in tables:
+        current_table += 1
+        print('Current table {} of {}'.format(current_table, tables_len))
         for row in table.rows:
             try:
                 if not row:
                     continue
-                if len(row.cells) < 2:
+                if not row.cells:
                     continue
             except Exception as e:
                 continue
@@ -118,13 +123,13 @@ def search_file(filename):
                         print(filename)
 
 
-
+count = 0
 def build_dir(root):
     for file in os.listdir(root):
         if os.path.isdir(os.path.join(root, file)):
             build_dir(os.path.join(root, file))
             continue
-        if file.endswith(".docx"):
+        if file.endswith("mat.docx"):
             if file.startswith('~'): continue
             # print('Parse file with name: {}'.format(file))
             # if file.endswith("transports.docx"):
@@ -137,10 +142,11 @@ def build_dir(root):
             # print('Parse machines')
             # ParserData(query).parse_machines(os.path.join(root, file))
             # # elif file.endswith(("materials.docx")):
-            # print('Parse materials')
-            search_file(os.path.join(root, file))
-            # ParserData(query).parse_materials_text(os.path.join(root, file))
+            print('Parse materials')
+            ParserData(query).parse_materials_text(os.path.join(root, file), count)
 
 
-build_dir(r'C:\Users\Rinat\Desktop\new_omsk\каталоги')
+# search_file(os.path.join(root, file))
+
+build_dir(r'C:\Users\Rinat\Desktop\new_omsk')
 conn.commit()

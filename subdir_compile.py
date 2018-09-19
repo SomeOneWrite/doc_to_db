@@ -51,7 +51,6 @@ def build_file(dir_id, root, file_name):
     ParserData(conn).parse_file(query, os.path.join(root, file_name), collection_id)
     conn.commit()
 
-
 def build_data(dir_id, root, file_name):
     query.execute('insert into collections(dir_id, type, name, techpart) values(?, ?, ?, ?)', (dir_id, '2',  file_name[:-5], 'techpart'))
     collection_id = get_last_insert_id('collections')
