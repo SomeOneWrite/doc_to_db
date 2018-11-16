@@ -221,8 +221,6 @@ def checkPrefixes(db_name):
         print(okvd + " - " + prefixes[okvd])
         count += 1
         print(query.execute("select * from materials where id1 = ?", [r[0]]).fetchall())
-        if (count > 10):
-            exit(0)
         print(count)
 
     conn.commit()
